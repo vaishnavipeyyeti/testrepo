@@ -22,7 +22,7 @@ plot(d)
 #the curve is symmetric thus we can fit normal distribution
 
 #scatter plot matrix
-pairs(head(naval))
+pairs(naval[,],pch=12)
 
 #means and median
 m1<-mean(naval$comp)
@@ -34,8 +34,13 @@ med1
 med2<-median(naval$turbine)
 med2
 #apply min max scale
-apply(naval,2,min)
-apply(naval,2,max)
+#apply(naval,2,min)
+#apply(naval,2,max)
+#naval.min.max<-t(apply(naval,1,nor.min.max))
+library(caret)
+process<-preProcess(as.data.frame(naval),method=c("range"))
+norm_scale<-predict(process,as.data.frame(naval))
+
 #Boston set
 library(MASS)
 bos<-MASS::Boston
