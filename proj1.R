@@ -42,4 +42,7 @@ input_pred[is.na(input_pred)]<-0
 #compare our predicted value and the predicted value of the data source
 View(wine$quality)
 View(input_pred)
+input_pred<-factor(input_pred,levels = c(0,1),ordered = T)
+summary(input_pred)
+summary(wine$quality)
 write.table(input_pred, "predictions.csv",col.names = F,row.names=F,quote=FALSE)
