@@ -1,6 +1,7 @@
 head(winequality.red)
 str(winequality.red)
 wine<-winequality.red
+head(wine)
 
 wine$quality [wine$quality >5] <- 1
 wine$quality [wine$quality <= 5] <- 0
