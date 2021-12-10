@@ -12,13 +12,14 @@ table(w$quality)
 
 ####################
 outliers<-function(x){
-  upper<-quantile(x,probs=.95)
-  lower<-quantile(x,probs = .05)
-  #Iqr=upper-lower
-  #upper1=upper+(Iqr *1.5)
-  #lower1=lower-(Iqr*1.5)
-  x>upper|x<lower
+  upper<-quantile(x,probs=.75)
+  lower<-quantile(x,probs = .25)
+  Iqr=upper-lower
+  upper1=upper+(Iqr *1.5)
+  lower1=lower-(Iqr*1.5)
+  x>upper1|x<lower1
 }
+
 
 
 remove_outliers<-function(w,cols = names(wine)){
@@ -151,8 +152,8 @@ scatterplot3d(w$sulphates,w$alcohol,w$quality,main = "3dplot")
 ############
 ws<-w
 ws_2 <- subset(ws, select= -c(quality))
-x<-cor(ds_2,method = "pearson") # correlation
-x_cor<-round(x,2)
+x1<-cor(ws_2,method = "pearson") # correlation
+x_cor<-round(x1,2)
 x_cor
 #correl
 library(corrplot)
@@ -162,32 +163,78 @@ corrplot(cor(w[,1:11]),method = "number",type="upper")
 #using mctest
 library(mctest)
 
-modq<-glm(w$quality~.,data = w)
+modq1<-glm(w$quality~.,data = w)
+summary(modq1)
 str(w)
-omcdiag(modq)
-imcdiag(modq)
+omcdiag(modq1)
+imcdiag(modq1)
 #farrar chi sqr is very high
 #critical f value at (11-1,1135-(11-1)) is 1.8391027
 #colleniarty  in 9 cols
 library(ppcor)
-pcor(w[,1:11], method = "pearson")
+pcor(w[,1:11],method = "pearson")
 
 
 
-#
-logisticmod<-glm(w$quality~w$chlorides+w$sulphates+w$fixed.acidity,family=binomial(),data=w)
-summary(logisticmod)
-pred<-predict(logisticmod,type = "response")
+#73.9
+logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$free.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+
+#73.7%
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$total.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$free.sulfur.dioxide+w$citric.acid,family=binomial(),data=w)
+
+#72
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$total.sulfur.dioxide+w$citric.acid,family=binomial(),data=w)
+
+#70%
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphate+w$density+w$free.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$density+w$free.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+
+#70%but collinear density
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$density+w$total.sulfur.dioxide+w$citric.acid,family=binomial(),data=w)
+#test==69.77
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$density+w$total.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$pH+w$total.sulfur.dioxide+w$volatile.acidity+w$residual.sugar,family=binomial(),data=w)
+
+#test==68.88 
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$fixed.acidity+w$total.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$pH+w$total.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$free.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
+
+
+
+summary(logisticmod11)
+
+omcdiag(logisticmod11)
+imcdiag(logisticmod11)
+pred<-predict(logisticmod11,type = "response")
 #convert the 
 s=w$quality==1
-str(pred)
+#str(pred)
 #error value
 error<-sum((pred >= 0.5) != s)/nrow(w[,1:11])
 error
 1-error
-input_pred= predict(logisticmod,w[,1:11],type = "response")
+input_pred= predict(logisticmod11,w[,1:11],type = "response")
 
 input_pred[input_pred>=0.5]<-1
 input_pred[input_pred!=1]<-0
 table(input_pred)
 table(w$quality)
+
+#acc
+misac=mean(input_pred!=w$quality)
+ac=1-misac
+ac
+#rsq
+library(caret)
+#confusionMatrix(table(w$quality,input_pred))
+#res<-caret::postResample(input_pred,w$quality)
+#res
+pr<-prediction(input_pred,w$quality)
+prf<-performance(pr,measure = "tpr",x.measure = "fpr")
+plot(prf)
+auc<-performance(pr,measure = "auc")
+auc<-auc@y.values[[1]]
+auc
+
