@@ -8,7 +8,7 @@ head(w)
 summary(w)
 colSums(is.na(w))
 table(w$quality)
-w$quality<-factor(w$quality,levels=c(0,1,2,3,4,5,6,7,8,9,10),ordered = T)
+#w$quality<-factor(w$quality,levels=c(0,1,2,3,4,5,6,7,8,9,10),ordered = T)
 
 ####################
 outliers<-function(x){
@@ -34,7 +34,8 @@ nrow(w)
 ################################
 colnames(w)
 w$quality<-ifelse(w$quality>5,1,0)
-w$quality<-factor(w$quality,levels = c(0,1),ordered = T)
+#w$quality<-factor(w$quality,levels = c(0,1),ordered = TRUE)
+str(w)
 #var1
 plot<-ggplot(w,aes(x=factor(quality),y=fixed.acidity,fill=factor(quality)))
 plot+geom_boxplot()
@@ -160,9 +161,11 @@ corrplot(cor(w[,1:11]),method = "number",type="upper")
 #donot have high correl between var
 #using mctest
 library(mctest)
-mod<-glm(w$quality~.,data = w)
-omcdiag(mod)
-imcdiag(mod)
+
+modq<-glm(w$quality~.,data = w)
+str(w)
+omcdiag(modq)
+imcdiag(modq)
 #farrar chi sqr is very high
 #critical f value at (11-1,1135-(11-1)) is 1.8391027
 #colleniarty  in 9 cols
