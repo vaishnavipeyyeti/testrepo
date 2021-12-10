@@ -228,13 +228,28 @@ ac=1-misac
 ac
 #rsq
 library(caret)
-#confusionMatrix(table(w$quality,input_pred))
 #res<-caret::postResample(input_pred,w$quality)
 #res
+library(ROCR)
 pr<-prediction(input_pred,w$quality)
 prf<-performance(pr,measure = "tpr",x.measure = "fpr")
 plot(prf)
 auc<-performance(pr,measure = "auc")
 auc<-auc@y.values[[1]]
 auc
+library(pscl)
+pR2(logisticmod11)
 
+
+cm<-as.matrix(table(w$quality,input_pred))
+n = sum(cm) # number of instances
+nc = nrow(cm) # number of classes
+diag = diag(cm) # number of correctly classified instances per class 
+rowsums = apply(cm, 1, sum) # number of instances per class
+colsums = apply(cm, 2, sum) # number of predictions per class
+p = rowsums / n # distribution of instances over the actual classes
+q = colsums / n # distribution of instances over the predicted classes
+precision = diag / colsums 
+recall = diag / rowsums 
+f1 = 2 * precision * recall / (precision + recall) 
+data.frame(precision, recall, f1)
