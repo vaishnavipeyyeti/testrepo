@@ -20,7 +20,7 @@ outliers<-function(x){
   x>upper1|x<lower1
 }
 
-
+#1 3 55 57 66 57 99
 
 remove_outliers<-function(w,cols = names(wine)){
   for (col in cols) {
@@ -35,6 +35,10 @@ nrow(w)
 ################################
 colnames(w)
 w$quality<-ifelse(w$quality>5,1,0)
+wtest<-w[801:1135,]
+w<-w[1:800,]
+dim(w)
+dim(wtest)
 #w$quality<-factor(w$quality,levels = c(0,1),ordered = TRUE)
 str(w)
 #var1
@@ -152,6 +156,7 @@ scatterplot3d(w$sulphates,w$alcohol,w$quality,main = "3dplot")
 ############
 ws<-w
 ws_2 <- subset(ws, select= -c(quality))
+colnames(ws_2)
 x1<-cor(ws_2,method = "pearson") # correlation
 x_cor<-round(x1,2)
 x_cor
@@ -201,29 +206,39 @@ logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$free.sulfur.dio
 #logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$pH+w$total.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
 #logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$free.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
 
+#logisticmod11<-glm(w$quality~w$chlorides+w$sulphates+w$alcohol+w$free.sulfur.dioxide+w$volatile.acidity,family=binomial(),data=w)
 
+#input_pred12= predict(logisticmod11,newdata=wtest,type = "response")
+logisticmod11<-glm(quality~chlorides+sulphates+alcohol+free.sulfur.dioxide+volatile.acidity,family=binomial(),data=w)
 
 summary(logisticmod11)
 
 omcdiag(logisticmod11)
+
 imcdiag(logisticmod11)
+
+
+
+logisticmod11<-glm(quality~chlorides+sulphates+alcohol+free.sulfur.dioxide+volatile.acidity,family=binomial(),data=w)
 pred<-predict(logisticmod11,type = "response")
-#convert the 
 s=w$quality==1
-#str(pred)
-#error value
 error<-sum((pred >= 0.5) != s)/nrow(w[,1:11])
 error
 1-error
-input_pred= predict(logisticmod11,w[,1:11],type = "response")
 
-input_pred[input_pred>=0.5]<-1
-input_pred[input_pred!=1]<-0
-table(input_pred)
-table(w$quality)
+
+test_predictions = predict(logisticmod11, wtest, type = "response")
+
+#using a probability cutoff of 0.5 for outcome of survived, default missing to deceased
+test_predictions[test_predictions >=0.5] <- 1
+test_predictions[ test_predictions != 1] <- 0
+test_predictions[is.na(test_predictions)] <- 0
+table(test_predictions)
+table(test_predictions)
+table(wtest$quality)
 
 #acc
-misac=mean(input_pred!=w$quality)
+misac=mean(test_predictions!=wtest$quality)
 ac=1-misac
 ac
 #rsq
@@ -231,7 +246,7 @@ library(caret)
 #res<-caret::postResample(input_pred,w$quality)
 #res
 library(ROCR)
-pr<-prediction(input_pred,w$quality)
+pr<-prediction(test_predictions,wtest$quality)
 prf<-performance(pr,measure = "tpr",x.measure = "fpr")
 plot(prf)
 auc<-performance(pr,measure = "auc")
