@@ -7,18 +7,8 @@ dfb<-ts(dd[,2],start = 1959,frequency = 365)
 class(dfb)
 head(dfb)
 plot(dfb)
-###############
-train<-dfb[1:304]
-plot.ts(train)
-class(train)
-head(train)
-train<-ts(train,start = 1959,frequency = 365)
-class(train)
-
-tst<-dd[305:365,2]
-tst<-ts(tst)
-class(tst)
-################
+tsdisplay(dfb)
+##
 
 #model with trn
 dtr<-diff(train)
@@ -31,7 +21,14 @@ plot(dtr2)
 plot(log(train))
 #plot(dtr)
 #plot(dtr2)
-###################
+
+#####
+kpss<-kpss.test(train)
+kpss
+k2<-kpss.test(dtr)
+k2
+k3<-kpss.test(dtr2)
+k3
 
 summary(train)#40
 summary(log(train))
@@ -73,12 +70,26 @@ auto.arima(log(train))
 #ar-0 i-1 ma-1
 m1<-arima(train,order = c(0,1,1))
 m2<-arima(train,order = c(0,1,0))
-m3<-arima(train,order = c(0,1,0))
-m4<-arima(train,order = c(0,2,0))
+m3<-arima(log(train),order = c(0,1,0))
+
 
 
 #lower aic check
-
-fit<-predict(train,m1)
 library(TSPred)
-MAPE(tst,fit)
+
+fit<-predict(m1,61)
+MAPE(tst,fit$pred)
+p1<-predict(m1,91)
+ans<-p1$pred[62:91]
+
+fit<-predict(m2,61)
+MAPE(tst,fit$pred)
+p2<-predict(m2,91)
+ans<-p2$pred[62:91]
+
+fit<-predict(m3,61)
+MAPE(log(tst),fit$pred)
+p3<-predict(m3,91)
+ans<-p3$pred[62:91]
+
+#m1 is the best fit
