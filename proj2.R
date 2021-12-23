@@ -9,6 +9,16 @@ head(dfb)
 plot(dfb)
 tsdisplay(dfb)
 ##
+train<-dfb[1:304]
+plot.ts(train)
+class(train)
+head(train)
+train<-ts(train,start = 1959,frequency = 365)
+class(train)
+
+tst<-dd[305:365,2]
+tst<-ts(tst)
+class(tst)
 
 #model with trn
 dtr<-diff(train)
