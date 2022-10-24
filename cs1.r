@@ -1,2 +1,21 @@
-x=1
-y=2
+library(dplyr)
+library(ggplot2)
+library(abd)
+
+data(iris)
+names(iris)
+str(iris)
+dim(iris)
+View(iris)
+ls()
+data(LakeHuron)
+ls()
+data(faithful)
+View(faithful)
+summary(faithful)
+dim(faithful)
+hist(faithful$eruptions)
+hist(faithful$eruptions, n=15)
+hist(faithful$eruptions, breaks=seq(1.5,5.25,.25), col="red")
+hist(faithful$eruptions, freq=F, n=15, main="Histogram of Old Faithful Eruption Times", xlab="Duration (mins)")
+
