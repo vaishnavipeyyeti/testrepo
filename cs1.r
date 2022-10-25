@@ -79,6 +79,8 @@ barplot(table(senate$party))
 barplot(table(senate$party),col=c("red","blue"),main = "states",names=c("democratic","republic"))
 barplot(xtabs(~sex+party,data=senate),beside=T,legend=c("f","m"),col=c("red","blue"))
 
+
+
 ###################################
 boxplot(iris$Sepal.Length)
 boxplot(iris$Sepal.Length, col="yellow")
@@ -86,14 +88,16 @@ boxplot(Sepal.Length ~ Species, data=iris)
 boxplot(Sepal.Length ~ Species, data=iris, col="yellow", ylab="Sepal length",main="Iris Sepal Length by Species")
 
 
-
-
-
-
-
-
-
-
-
-
+###################################
+data(faithful)
+?plot()
+plot(waiting~eruptions,data=faithful)
+#pch means plot character shapes from 0 to 25
+#The cex attribute is the integer which is an indicator of the scale factor, which describes the amount by which the elements of the plot can be scaled. 
+plot(waiting~eruptions,data=faithful,cex=.8)
+plot(waiting~eruptions,data=faithful,pch=6)
+plot(waiting~eruptions,data=faithful,pch=19)
+plot(waiting~eruptions,data=faithful,cex=.5,pch=19,col="blue")
+plot(waiting~eruptions, data=faithful, cex=.5, pch=19, col="blue", main="Old Faithful Eruptions",
+     ylab="Wait time between eruptions", xlab="Duration of eruption")
 
