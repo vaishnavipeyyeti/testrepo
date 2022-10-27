@@ -198,16 +198,50 @@ tblood # contingency table for blood type and Rh factors
 chisq.test(tblood)
 fisher.test(tblood)
 
+########################################CVALUES
+qt(c(.95, .975, .995), df=9) # critical values for 90, 95, 99% CIs for means
+pt(-2.1, 11) # gives Prob[T < -2.1] when df = 11
+tSamp = rt(50, 11) # takes random sample of size 50 from t-dist with 11 dfs
+# code for comparing several t distributions to standard normal distribution
+xs = seq(-5,5,.01)
+plot(xs, dnorm(xs), type="l", lwd=2, col="black", ylab="pdf values",main="Some t dists alongside standard normal curve")
+lines(xs, dt(xs, 1), lwd=2, col="blue")
+lines(xs, dt(xs, 4), lwd=2, col="red")
+lines(xs, dt(xs, 10), lwd=2, col="green")
+legend("topright",col=c("black","blue","red","green"),legend=c("std. normal","t, df=1","t, df=4","t, df=10"), lty=1)
 
 
 
 
+#################################################################3
+data(warpbreaks)
+head(warpbreaks)
+by(warpbreaks$breaks, warpbreaks$tension, mean)
 
 
+##################################################################################################
+data(sleep)
+View(sleep)
+t.test(extra ~ group, data=sleep) # 2-sample t with group id column
+str(sleep)
+sleepGrp1 = sleep$extra[sleep$group==1]
+ sleepGrp2 = sleep$extra[sleep$group==2]
+ t.test(sleepGrp1, sleepGrp2, conf.level=.99) # 2-sample t, data in separate vectors
+ qqnorm(precip, ylab = "Precipitation [in/yr] for 70 US cities", pch=19, cex=.6)
+ qqline(precip) # Is this line helpful? Is it the one you would eyeball?
+
+###################################################################
+power.t.test(n=20, delta=.1, sd=.4, sig.level=.05) # tells how much power at these setting
+power.t.test(power=0.8, delta=.1, sd=.4, sig.level=.05) # tells how much power at these setting
 
 
-
-
+########################################################################################
+require(lattice)
+require(abd)
+data(JetLagKnees)
+head(JetLagKnees)
+xyplot(shift ~ treatment, JetLagKnees, type=c('p','a'), col="navy", pch=19, cex=.5)
+anova( lm( shift ~ treatment, JetLagKnees ) )
 
 
 
